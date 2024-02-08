@@ -18,5 +18,5 @@ export class CreatePromoDto {
   title: string = 'Название акции';
 
   @IsString()
-  text: string = 'Описание акции';
+  description: string = 'Описание акции';
 }

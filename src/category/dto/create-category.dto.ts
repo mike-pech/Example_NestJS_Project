@@ -1,6 +1,7 @@
-import { IsAlpha } from 'class-validator';
+import { IsAlpha, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
-  @IsAlpha()
+  @IsString()
+  // @IsAlpha()
   title: string;
 }

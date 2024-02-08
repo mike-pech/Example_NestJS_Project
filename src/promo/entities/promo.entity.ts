@@ -6,14 +6,11 @@ export class PromoEntity {
   id: number;
 
   @Column()
+  image: string;
+
+  @Column()
   title: string;
 
   @Column()
   description: string;
-
-  @Column()
-  image: string;
-
-  @Column({ default: true })
-  isActive: boolean;
 }
