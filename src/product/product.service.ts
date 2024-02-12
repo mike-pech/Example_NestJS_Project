@@ -23,7 +23,7 @@ export class ProductService {
     return this.repository.save({
       image: image.filename,
       title: createProductDto.title,
-      deascription: createProductDto.description,
+      description: createProductDto.description,
       price: parseInt(createProductDto.price),
     });
   }

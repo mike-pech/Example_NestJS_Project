@@ -1,3 +1,4 @@
+import { IsOptional } from 'class-validator';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -11,6 +12,7 @@ export class PromoEntity {
   @Column()
   title: string;
 
+  @IsOptional()
   @Column()
-  description: string;
+  description?: string;
 }
