@@ -12,10 +12,10 @@ export class CategoryService {
     @InjectRepository(CategoryEntity)
     private repository: Repository<CategoryEntity>,
   ) {}
+
   async create(createCategoryDto: CreateCategoryDto) {
     return this.repository.save(createCategoryDto);
   }
-
   async findAll() {
     return `This action returns all category`;
   }
@@ -35,7 +35,7 @@ export class CategoryService {
     return this.repository.save(toUpdate);
   }
 
-  async remove(id: number) {
+  async delete(id: number) {
     return `This action removes a #${id} category`;
   }
 }
