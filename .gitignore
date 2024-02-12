@@ -36,4 +36,5 @@ lerna-debug.log*
 
 # Auxilary
 theory.md
+databases.md
 .env

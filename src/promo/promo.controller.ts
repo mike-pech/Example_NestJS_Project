@@ -13,41 +13,41 @@ import {
 import { ApiTags, ApiConsumes } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { ProductService } from './product.service';
+import { PromoService } from './promo.service';
 import { fileStorage } from './storage';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { ProductEntity } from './entities/product.entity';
+import { CreatePromoDto } from './dto/create-promo.dto';
+import { UpdatePromoDto } from './dto/update-promo.dto';
+import { PromoEntity } from './entities/promo.entity';
 import { DeleteResult } from 'typeorm';
 
-@ApiTags('product')
-@Controller('product')
-export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+@ApiTags('promo')
+@Controller('promo')
+export class PromoController {
+  constructor(private readonly promoService: PromoService) {}
 
   @Post()
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   create(
-    @Body() dto: CreateProductDto,
+    @Body() dto: CreatePromoDto,
     @UploadedFile() image: Express.Multer.File,
-  ): Promise<ProductEntity> {
-    return this.productService.create(dto, image);
+  ): Promise<PromoEntity> {
+    return this.promoService.create(dto, image);
   }
 
   @Get()
-  findAll(): Promise<ProductEntity[]> {
-    return this.productService.findAll();
+  findAll(): Promise<PromoEntity[]> {
+    return this.promoService.findAll();
   }
 
   @Get('/image/:path')
   download(@Param('path') path: string, @Response() response) {
-    return response.sendFile(path, { root: './db_images/product' });
+    return response.sendFile(path, { root: './db_images/promo' });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string): Promise<ProductEntity> {
-    return this.productService.findOne(+id);
+  findOne(@Param('id') id: string): Promise<PromoEntity> {
+    return this.promoService.findOne(+id);
   }
 
   @Patch(':id')
@@ -55,14 +55,14 @@ export class ProductController {
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   update(
     @Param('id') id: string,
-    @Body() updateproductDto: UpdateProductDto,
+    @Body() updatePromoDto: UpdatePromoDto,
     @UploadedFile() image: Express.Multer.File,
-  ): Promise<ProductEntity> {
-    return this.productService.update(+id, updateproductDto, image);
+  ): Promise<PromoEntity> {
+    return this.promoService.update(+id, updatePromoDto, image);
   }
 
   @Delete(':id')
   delete(@Param('id') id: string): Promise<DeleteResult> {
-    return this.productService.delete(+id);
+    return this.promoService.delete(+id);
   }
 }

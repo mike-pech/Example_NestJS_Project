@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsInt } from 'class-validator';
+import { IsString } from 'class-validator';
 
-export class CreateProductDto {
+export class CreatePromoDto {
   @ApiProperty({
     type: 'file',
     properties: {
@@ -16,13 +16,9 @@ export class CreateProductDto {
 
   @ApiProperty()
   @IsString()
-  title: string = 'Наименование товара';
+  title: string = 'Название акции';
 
   @ApiProperty()
   @IsString()
-  description: string = 'Наименование товара';
-
-  @ApiProperty()
-  @IsInt()
-  price: string = 'Цена товара';
+  description: string = 'Описание акции';
 }

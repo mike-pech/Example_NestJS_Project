@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class ProductEntity {
+export class PromoEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -13,7 +13,4 @@ export class ProductEntity {
 
   @Column()
   description: string;
-
-  @Column()
-  price: number;
 }
