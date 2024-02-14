@@ -9,8 +9,9 @@ import {
   UseInterceptors,
   UploadedFile,
   Response,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiConsumes, ApiQuery } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { ProductService } from './product.service';
@@ -29,15 +30,17 @@ export class ProductController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('image', { storage: fileStorage }))
   create(
-    @Body() dto: CreateProductDto,
+    @Body() createProductDto: CreateProductDto,
     @UploadedFile() image: Express.Multer.File,
   ): Promise<ProductEntity> {
-    return this.productService.create(dto, image);
+    return this.productService.create(createProductDto, image);
   }
 
   @Get()
-  findAll(): Promise<ProductEntity[]> {
-    return this.productService.findAll();
+  @ApiQuery({ name: 'categoryId', required: false })
+  findAll(@Query('categoryId') categoryId: number): Promise<ProductEntity[]> {
+    if (categoryId) return this.productService.findByCategoryId(categoryId);
+    else return this.productService.findAll();
   }
 
   @Get('/image/:path')
@@ -45,7 +48,7 @@ export class ProductController {
     return response.sendFile(path, { root: './db_images/product' });
   }
 
-  @Get(':id')
+  @Get('/:id')
   findOne(@Param('id') id: string): Promise<ProductEntity> {
     return this.productService.findOne(+id);
   }

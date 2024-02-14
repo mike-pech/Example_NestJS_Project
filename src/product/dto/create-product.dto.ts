@@ -25,4 +25,7 @@ export class CreateProductDto {
   @ApiProperty()
   @IsNumberString()
   price: string = 'Цена товара';
+
+  @IsNumberString()
+  categoryId: number;
 }

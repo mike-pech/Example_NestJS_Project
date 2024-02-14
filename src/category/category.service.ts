@@ -17,11 +17,11 @@ export class CategoryService {
     return this.repository.save(createCategoryDto);
   }
   async findAll() {
-    return `This action returns all category`;
+    return this.repository.find();
   }
 
   async findOne(id: number) {
-    return `This action returns a #${id} category`;
+    return this.repository.findOneBy({ id });
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
@@ -36,6 +36,6 @@ export class CategoryService {
   }
 
   async delete(id: number) {
-    return `This action removes a #${id} category`;
+    return this.repository.delete(id);
   }
 }

@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { CategoryEntity } from 'src/category/entities/category.entity';
+import { Entity, Column, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('product')
 export class ProductEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -16,4 +17,8 @@ export class ProductEntity {
 
   @Column()
   price: number;
+
+  @ManyToOne(() => CategoryEntity, (category) => category.product, { eager: true })
+  @JoinColumn()
+  category: CategoryEntity;
 }

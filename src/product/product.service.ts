@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DeleteResult, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,49 +6,79 @@ import * as fs from 'fs';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductEntity } from './entities/product.entity';
+import { CategoryEntity } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class ProductService {
-
   constructor(
     @InjectRepository(ProductEntity)
-    private repository: Repository<ProductEntity>,
+    private productRepository: Repository<ProductEntity>,
+
+    @InjectRepository(CategoryEntity)
+    private categoryRepository: Repository<CategoryEntity>,
   ) {}
 
   async create(
     createProductDto: CreateProductDto,
     image: Express.Multer.File,
   ): Promise<ProductEntity> {
-    return this.repository.save({
-      image: image.filename,
-      title: createProductDto.title,
-      description: createProductDto.description,
-      price: parseInt(createProductDto.price),
+    const product = new ProductEntity();
+    product.image = image.filename;
+    product.title = createProductDto.title;
+    product.description = createProductDto.description;
+
+    const newProduct = await this.productRepository.save(product);
+
+    const category = await this.categoryRepository.findOne({
+      where: { id: createProductDto.categoryId },
+      relations: ['product'],
     });
+
+    category.product.push(product);
+
+    await this.categoryRepository.save(category);
+
+    return newProduct;
   }
 
-  async findAll() {
-    return this.repository.find();
+  async findAll(): Promise<ProductEntity[]> {
+    return this.productRepository.find();
   }
 
-  async findOne(id: number) {
-    return this.repository.findOneBy({ id });
+  async findOne(id: number): Promise<ProductEntity> {
+    return this.productRepository.findOneBy({ id });
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto, image: Express.Multer.File) {
-    const toUpdate = await this.repository.findOneBy({ id });
+  async findByCategoryId(categoryId: number): Promise<ProductEntity[]> {
+    return this.productRepository
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .where('product.categoryId = :categoryId', { categoryId })
+      .getMany();
+  }
+
+  async update(
+    id: number,
+    updateProductDto: UpdateProductDto,
+    image: Express.Multer.File,
+  ): Promise<ProductEntity> {
+    const toUpdate = await this.productRepository.findOneBy({ id });
     if (!toUpdate) {
       throw new BadRequestException(`Записи с id=${id} не найдено`);
     }
-    if (updateProductDto.price) {
-      toUpdate.price = parseInt(updateProductDto.price);
-    }
-    if (updateProductDto.title) {
-      toUpdate.title = updateProductDto.title;
+    if (updateProductDto.title) toUpdate.title = updateProductDto.title;
+    if (updateProductDto.description)
+      toUpdate.description = updateProductDto.description;
+    if (updateProductDto.categoryId) {
+      const category = await this.categoryRepository.findOne({
+        where: { id: updateProductDto.categoryId },
+        relations: ['product'],
+      });
+      toUpdate.category = category;
     }
     if (image) {
       if (toUpdate.image !== image.filename) {
-        fs.unlink(`db_images/product/${toUpdate.image}`, (err) => {   
+        fs.unlink(`db_images/product/${toUpdate.image}`, (err) => {
           if (err) {
             console.error(err);
           }
@@ -57,10 +86,11 @@ export class ProductService {
       }
       toUpdate.image = image.filename;
     }
-    return this.repository.save(toUpdate);
+
+    return this.productRepository.save(toUpdate);
   }
 
   async delete(id: number): Promise<DeleteResult> {
-    return this.repository.delete(id);
+    return this.productRepository.delete(id);
   }
 }
