@@ -15,12 +15,18 @@ async function bootstrap() {
       `[The source API definition (json)](http://${process.env.SERVER}:${process.env.PORT}/api-json)`,
     )
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   app.useGlobalPipes(new ValidationPipe());
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+    },
+  });
 
   // Читаем из файла .env наш сервер и порт
   const port: number = parseInt(process.env.PORT);
